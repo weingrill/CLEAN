@@ -1,0 +1,82 @@
+
+Hi Brian, here is an annotated run of CLEAN:
+
+Start with 14650.xyz which is the time-series file you want to CLEAN
+ 
+ex-4-> /d/stella2/barnes/usr/fortprogs/clean/dfourt  #Run dfourt to get dirty spec
+INPUT FILES & PARAMETERS:
+$Time series data file: 
+14650.xyz					
+$[0=default]  Frequency resolution: 
+0.005
+$[0=default]  Maximum frequency (for D): 
+10
+$[0=default]  Points-per-beam: 
+0
+OUTPUT FILES:
+$Dirty spectrum file: 
+14650.dfile    
+$Spectral window file: 
+14650.wfile
+826.57467 11.284 0.007                                                         
+total points is   60
+    821.992    11.2510
+FRES,FMAX,PPB=    5.00000E-03   10.00000    4.00000
+Computing the dirty spectrum...
+Computing the spectral window...
+14650.dfile   ,df=14650.xyz     ,N=   60,Tsub= 8.2199219E+02,Dsub= 1.1250963E+01
+14650.wfile   ,df=14650.xyz     ,N=   60,Tsub= 8.2199219E+02,Tavg= 8.2199219E+02
+
+Now we have the dirty spectrum, called xxx.dfile and the window fn in xxx.wfile
+
+ex-5-> /d/stella2/barnes/usr/fortprogs/clean/clean #Run clean to get clean spec
+INPUT FILES:
+$Dirty spectrum file: 
+14650.dfile
+$Spectral window file: 
+14650.wfile
+INPUT PARAMETERS:
+$Gain: 
+0.1
+$[ >0 = #CLEANs, <0 = CLEAN level ]  Cleans: 
+100
+OUTPUT FILES:
+$Residual spectrum file: 
+14650.rfile
+$CLEAN components file: 
+14650.cmpfile
+$Clean spectrum file: 
+14650.cfile
+14650.dfile   ,df=14650.xyz     ,N=   60,Tsub= 8.2199219E+02,Dsub= 1.1250963E+01
+14650.wfile   ,df=14650.xyz     ,N=   60,Tsub= 8.2199219E+02,Tavg= 8.2199219E+02
+CLEANing up to   100  iterations, or down to   0.
+NCLEAN=  100           RMAX=    3.96658E-04
+14650.rfile   ,From:14650.dfile   , and:14650.wfile   ; G= 0.1000, C= 1.0000E+02
+14650.cmpfile ,From:14650.dfile   , and:14650.wfile   ; G= 0.1000, C= 1.0000E+02
+14650.cfile   ,From:14650.dfile   , and:14650.wfile   ; G= 0.1000, C= 1.0000E+02 
+
+Now we have the clean spectrum in xxx.cfile.
+
+Use the awk commands below to strip off the headers and add the squares of 
+cols 2 and 3 to see the power and compare the original and final spectra.
+
+awk '{if (NR>=2) print $1,sqrt($2*$2+$3*$3)}' 14650.cfile > 14650.ncfile
+
+awk '{if (NR>=2) print $1,sqrt($2*$2+$3*$3)}' 14650.dfile > 14650.ndfile
+
+Plot them up. Then phase the original light curve (.xyz file) 
+about the peak frequency, which I found to be equivalent to 3.54d
+
+ex-5-> /d/stella2/barnes/usr/fortprogs/clean/phase #phase the data about 3.54d
+
+what is the name of the input data file (time,data)
+14650.xyz
+what is the period to be removed from the data?
+3.54
+what is the name of the output data file (phase,data)
+14650.phased.3.54d 
+skipping one line...
+finished...
+
+Now, plot 14650.phased.3.54d to see the phased light curve
+

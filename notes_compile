@@ -1,0 +1,5 @@
+
+Compiled all the programs with Dave James' help. 
+
+It required replacing the TYPE statement with a WRITE statement, 
+and in the OPEN statement, removing the CARRIAGECONTROL='LIST' part
